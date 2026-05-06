@@ -18,7 +18,7 @@ import { TECH_STACK } from '../../../data/stack.data';
           subtitle="Tecnologías con las que construyo productos digitales robustos y escalables."
           [centered]="true"
         />
-        
+
         <div class="stack-grid">
           @for (category of techStack; track category.name) {
             <app-glass-card>
@@ -29,8 +29,8 @@ import { TECH_STACK } from '../../../data/stack.data';
                 </div>
                 <div class="category-techs">
                   @for (tech of category.technologies; track tech) {
-                    <app-tech-chip 
-                      [technology]="tech" 
+                    <app-tech-chip
+                      [technology]="tech"
                       [highlighted]="isPrimaryTech(tech)"
                     />
                   }
@@ -46,41 +46,41 @@ import { TECH_STACK } from '../../../data/stack.data';
     .stack {
       background: linear-gradient(180deg, #0B0B0B 0%, #111111 100%);
     }
-    
+
     .stack-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1.5rem;
     }
-    
+
     .stack-category {
       height: 100%;
     }
-    
+
     .category-header {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       margin-bottom: 1.25rem;
     }
-    
+
     .category-icon {
       font-size: 1.5rem;
     }
-    
+
     .category-name {
       font-size: 1.125rem;
       font-weight: 600;
       color: #F8FAFC;
       margin: 0;
     }
-    
+
     .category-techs {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
-    
+
     @media (max-width: 768px) {
       .stack-grid {
         grid-template-columns: 1fr;
@@ -90,9 +90,9 @@ import { TECH_STACK } from '../../../data/stack.data';
 })
 export class StackComponent {
   techStack = TECH_STACK;
-  
+
   primaryTechs = ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'AWS'];
-  
+
   isPrimaryTech(tech: string): boolean {
     return this.primaryTechs.includes(tech);
   }

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
           <span class="logo-text">Mauricio</span>
           <span class="logo-accent">.dev</span>
         </a>
-        
+
         <div class="navbar-links" [class.active]="mobileMenuOpen()">
           <a href="#about" class="nav-link" (click)="closeMobileMenu()">Sobre mí</a>
           <a href="#stack" class="nav-link" (click)="closeMobileMenu()">Stack</a>
@@ -20,9 +20,9 @@ import { CommonModule } from '@angular/common';
           <a href="#projects" class="nav-link" (click)="closeMobileMenu()">Proyectos</a>
           <a href="#contact" class="nav-link nav-link-cta" (click)="closeMobileMenu()">Contacto</a>
         </div>
-        
-        <button 
-          class="mobile-toggle" 
+
+        <button
+          class="mobile-toggle"
           (click)="toggleMobileMenu()"
           [attr.aria-expanded]="mobileMenuOpen()"
           aria-label="Toggle menu"
@@ -42,7 +42,7 @@ import { CommonModule } from '@angular/common';
       padding: 1rem 0;
       transition: all 0.3s ease;
     }
-    
+
     .navbar.scrolled {
       background: rgba(11, 11, 11, 0.9);
       backdrop-filter: blur(20px);
@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
       padding: 0.75rem 0;
       border-bottom: 1px solid rgba(124, 58, 237, 0.1);
     }
-    
+
     .navbar-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -59,7 +59,7 @@ import { CommonModule } from '@angular/common';
       align-items: center;
       justify-content: space-between;
     }
-    
+
     .navbar-logo {
       display: flex;
       align-items: center;
@@ -67,21 +67,21 @@ import { CommonModule } from '@angular/common';
       font-weight: 700;
       text-decoration: none;
     }
-    
+
     .logo-text {
       color: #F8FAFC;
     }
-    
+
     .logo-accent {
       color: #7C3AED;
     }
-    
+
     .navbar-links {
       display: flex;
       align-items: center;
       gap: 2rem;
     }
-    
+
     .nav-link {
       color: #A1A1AA;
       text-decoration: none;
@@ -89,24 +89,24 @@ import { CommonModule } from '@angular/common';
       font-weight: 500;
       transition: color 0.3s ease;
     }
-    
+
     .nav-link:hover {
       color: #F8FAFC;
     }
-    
+
     .nav-link-cta {
       color: #7C3AED;
       padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       border: 1px solid rgba(124, 58, 237, 0.3);
     }
-    
+
     .nav-link-cta:hover {
       color: #F8FAFC;
       background: rgba(124, 58, 237, 0.15);
       border-color: rgba(124, 58, 237, 0.5);
     }
-    
+
     .mobile-toggle {
       display: none;
       background: none;
@@ -114,7 +114,7 @@ import { CommonModule } from '@angular/common';
       cursor: pointer;
       padding: 0.5rem;
     }
-    
+
     .hamburger {
       display: block;
       width: 24px;
@@ -123,7 +123,7 @@ import { CommonModule } from '@angular/common';
       position: relative;
       transition: all 0.3s ease;
     }
-    
+
     .hamburger::before,
     .hamburger::after {
       content: '';
@@ -133,34 +133,34 @@ import { CommonModule } from '@angular/common';
       background: #F8FAFC;
       transition: all 0.3s ease;
     }
-    
+
     .hamburger::before {
       top: -8px;
     }
-    
+
     .hamburger::after {
       top: 8px;
     }
-    
+
     .hamburger.open {
       background: transparent;
     }
-    
+
     .hamburger.open::before {
       top: 0;
       transform: rotate(45deg);
     }
-    
+
     .hamburger.open::after {
       top: 0;
       transform: rotate(-45deg);
     }
-    
+
     @media (max-width: 768px) {
       .mobile-toggle {
         display: block;
       }
-      
+
       .navbar-links {
         position: fixed;
         top: 0;
@@ -175,12 +175,12 @@ import { CommonModule } from '@angular/common';
         visibility: hidden;
         transition: all 0.3s ease;
       }
-      
+
       .navbar-links.active {
         opacity: 1;
         visibility: visible;
       }
-      
+
       .nav-link {
         font-size: 1.5rem;
       }
@@ -190,16 +190,16 @@ import { CommonModule } from '@angular/common';
 export class NavbarComponent {
   isScrolled = signal(false);
   mobileMenuOpen = signal(false);
-  
+
   @HostListener('window:scroll')
   onScroll() {
     this.isScrolled.set(window.scrollY > 50);
   }
-  
+
   toggleMobileMenu() {
     this.mobileMenuOpen.update(v => !v);
   }
-  
+
   closeMobileMenu() {
     this.mobileMenuOpen.set(false);
   }

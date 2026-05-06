@@ -16,11 +16,11 @@ import { CommonModule } from '@angular/common';
     .section-heading {
       margin-bottom: 3rem;
     }
-    
+
     .center {
       text-align: center;
     }
-    
+
     .section-badge {
       display: inline-block;
       padding: 0.375rem 1rem;
@@ -33,7 +33,7 @@ import { CommonModule } from '@angular/common';
       border-radius: 9999px;
       margin-bottom: 1rem;
     }
-    
+
     .section-title {
       font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
       margin: 0 0 1rem;
       line-height: 1.2;
     }
-    
+
     .section-subtitle {
       font-size: 1.125rem;
       color: #A1A1AA;
@@ -49,7 +49,7 @@ import { CommonModule } from '@angular/common';
       margin: 0;
       line-height: 1.7;
     }
-    
+
     .center .section-subtitle {
       margin-left: auto;
       margin-right: auto;

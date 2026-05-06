@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
       transition: all 0.3s ease;
       cursor: default;
     }
-    
+
     .tech-chip:hover {
       color: #F8FAFC;
       background: rgba(124, 58, 237, 0.15);
@@ -32,13 +32,13 @@ import { CommonModule } from '@angular/common';
       transform: translateY(-2px);
       box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
     }
-    
+
     .highlighted {
       color: #F8FAFC;
       background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(0, 255, 178, 0.1) 100%);
       border-color: rgba(124, 58, 237, 0.3);
     }
-    
+
     .highlighted:hover {
       background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(0, 255, 178, 0.15) 100%);
       border-color: rgba(124, 58, 237, 0.5);

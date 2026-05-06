@@ -39,7 +39,7 @@
 .grid-pattern {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
@@ -205,20 +205,20 @@
     grid-template-columns: 1fr;
     text-align: center;
   }
-  
+
   .hero-subtitle {
     margin-left: auto;
     margin-right: auto;
   }
-  
+
   .hero-cta {
     justify-content: center;
   }
-  
+
   .hero-metrics {
     justify-content: center;
   }
-  
+
   .hero-visual {
     display: none;
   }
@@ -229,7 +229,7 @@
     flex-wrap: wrap;
     gap: 1.5rem;
   }
-  
+
   .metric-item {
     min-width: 100px;
   }

@@ -5,7 +5,7 @@
     <div class="gradient-orb gradient-orb-2"></div>
     <div class="grid-pattern"></div>
   </div>
-  
+
   <div class="hero-container">
     <div class="hero-content">
       <!-- Badge -->
@@ -13,17 +13,17 @@
         <span class="badge-dot"></span>
         {{ profile.badge }}
       </div>
-      
+
       <!-- Title -->
       <h1 class="hero-title animate-fade-up" style="animation-delay: 0.1s">
         {{ profile.heroTitle }}
       </h1>
-      
+
       <!-- Subtitle -->
       <p class="hero-subtitle animate-fade-up" style="animation-delay: 0.2s">
         {{ profile.heroSubtitle }}
       </p>
-      
+
       <!-- CTA Buttons -->
       <div class="hero-cta animate-fade-up" style="animation-delay: 0.3s">
         <app-glow-button variant="primary" (onClick)="scrollToProjects()">
@@ -36,7 +36,7 @@
           LinkedIn
         </app-glow-button>
       </div>
-      
+
       <!-- Metrics -->
       <div class="hero-metrics animate-fade-up" style="animation-delay: 0.4s">
         @for (metric of profile.metrics; track metric.label) {
@@ -47,7 +47,7 @@
         }
       </div>
     </div>
-    
+
     <!-- Code Preview Card -->
     <div class="hero-visual animate-fade-up" style="animation-delay: 0.5s">
       <div class="code-card">

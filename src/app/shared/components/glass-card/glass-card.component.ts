@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div 
+    <div
       class="glass-card group"
       [class.hover-effect]="hoverable"
       [class.glow-effect]="glowOnHover"
@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
       position: relative;
       overflow: hidden;
     }
-    
+
     .glass-card::before {
       content: '';
       position: absolute;
@@ -44,16 +44,16 @@ import { CommonModule } from '@angular/common';
       mask-composite: exclude;
       pointer-events: none;
     }
-    
+
     .hover-effect:hover {
       transform: translateY(-4px);
       background: rgba(24, 24, 27, 0.8);
     }
-    
+
     .glow-effect:hover {
       box-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
     }
-    
+
     .glow-effect:hover::before {
       background: linear-gradient(
         135deg,
