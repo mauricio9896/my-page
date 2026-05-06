@@ -1,0 +1,66 @@
+<section class="hero">
+  <!-- Background Effects -->
+  <div class="hero-bg">
+    <div class="gradient-orb gradient-orb-1"></div>
+    <div class="gradient-orb gradient-orb-2"></div>
+    <div class="grid-pattern"></div>
+  </div>
+  
+  <div class="hero-container">
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="hero-badge animate-fade-up">
+        <span class="badge-dot"></span>
+        {{ profile.badge }}
+      </div>
+      
+      <!-- Title -->
+      <h1 class="hero-title animate-fade-up" style="animation-delay: 0.1s">
+        {{ profile.heroTitle }}
+      </h1>
+      
+      <!-- Subtitle -->
+      <p class="hero-subtitle animate-fade-up" style="animation-delay: 0.2s">
+        {{ profile.heroSubtitle }}
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="hero-cta animate-fade-up" style="animation-delay: 0.3s">
+        <app-glow-button variant="primary" (onClick)="scrollToProjects()">
+          Ver proyectos
+        </app-glow-button>
+        <app-glow-button variant="secondary" (onClick)="downloadCV()">
+          Descargar CV
+        </app-glow-button>
+        <app-glow-button variant="outline" (onClick)="openLinkedIn()">
+          LinkedIn
+        </app-glow-button>
+      </div>
+      
+      <!-- Metrics -->
+      <div class="hero-metrics animate-fade-up" style="animation-delay: 0.4s">
+        @for (metric of profile.metrics; track metric.label) {
+          <div class="metric-item">
+            <span class="metric-value">{{ metric.value }}</span>
+            <span class="metric-label">{{ metric.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+    
+    <!-- Code Preview Card -->
+    <div class="hero-visual animate-fade-up" style="animation-delay: 0.5s">
+      <div class="code-card">
+        <div class="code-header">
+          <div class="code-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="code-title">dashboard.component.ts</span>
+        </div>
+        <div class="code-content" [innerHTML]="codeSnippet"></div>
+      </div>
+    </div>
+  </div>
+</section>
