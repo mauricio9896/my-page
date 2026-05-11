@@ -42,3 +42,8 @@ export const PROFILE: Profile = {
     { value: '25%', label: 'mejora en eficiencia' }
   ]
 };
+
+
+// "Desarrollador Frontend con 3 años de experiencia especializado en la creación de interfaces robustas y escalables para el sector bancario utilizando Angular. Mi enfoque principal es la optimización del rendimiento y la seguridad en flujos transaccionales complejos.
+
+// He trabajado en la modernización de plataformas financieras, asegurando código limpio y mantenible. Apasionado por la arquitectura de software y la mejora continua del flujo de caja del usuario a través de interfaces intuitivas."
