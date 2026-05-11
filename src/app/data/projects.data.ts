@@ -16,13 +16,14 @@ export const PROJECTS: Project[] = [
     category: 'Banca digital',
     year: '2025',
     role: 'Desarrollador',
-    description: 'Plataforma financiera para usuarios naturales, construida con enfoque en velocidad, seguridad, accesibilidad y experiencia digital moderna.',
-    fullDescription: 'Participé en el diseño y desarrollo inicial de la sucursal virtual para personas, contribuyendo a la arquitectura base, construcción de módulos y definición de flujos transaccionales. El proyecto estuvo orientado a mejorar la experiencia digital de usuarios naturales mediante interfaces modernas, seguras y fáciles de usar.',
+    description: 'Sucursal virtual integral que permite a usuarios naturales gestionar productos financieros, realizar transferencias, pagos y consultas desde cualquier lugar.',
+    fullDescription: 'Participé en el desarrollo de la sucursal virtual para personas naturales, construyendo módulos clave como el resumen de productos financieros, consultas y certificados, transferencias interbancarias, pagos de servicios e integración con el ecosistema Bre-B. El proyecto transformó la experiencia bancaria digital, ofreciendo una plataforma moderna, segura y accesible 24/7.',
     highlights: [
-      'Flujos transaccionales',
-      'Arquitectura frontend',
-      'Experiencia bancaria digital',
-      'Integración con servicios'
+      'Resumen de productos',
+      'Consultas y certificados',
+      'Transferencias',
+      'Pagos',
+      'Integración Bre-B'
     ],
     technologies: ['Angular', 'TypeScript', 'Java', 'APIs', 'Seguridad', 'UX', 'SQL']
   },
@@ -31,30 +32,35 @@ export const PROJECTS: Project[] = [
     category: 'Enterprise banking',
     year: '2025',
     role: 'Desarrollador',
-    description: 'Sucursal virtual para usuarios jurídicos, enfocada en operaciones empresariales seguras, componentes escalables e interfaces claras.',
-    fullDescription: 'Participé en el desarrollo de la sucursal virtual para empresas, construyendo módulos orientados a usuarios jurídicos, flujos transaccionales y componentes escalables. El proyecto buscó modernizar la relación digital entre entidades financieras y clientes empresariales.',
+    description: 'Sucursal virtual empresarial que permite gestionar productos, realizar transferencias, pagos y dispersión de nóminas mediante archivos asobancarios.',
+    fullDescription: 'Participé en el desarrollo de la sucursal virtual para usuarios jurídicos, construyendo módulos de resumen de productos, consultas y certificados, transferencias, pagos de servicios e integración Bre-B. Implementé el módulo de pago de nóminas que permite cargar archivos asobancarios para realizar la dispersión masiva de pagos a empleados, optimizando procesos administrativos empresariales.',
     highlights: [
-      'Usuarios jurídicos',
-      'Operaciones empresariales',
-      'Componentes reutilizables',
-      'Seguridad y confiabilidad'
+      'Resumen de productos',
+      'Consultas y certificados',
+      'Transferencias',
+      'Pagos',
+      'Dispersión de nóminas (Asobancaria)',
+      'Integración Bre-B'
     ],
     technologies: ['Angular', 'TypeScript', 'Java', 'APIs REST', 'Arquitectura Frontend', 'UI/UX']
   },
   {
-    title: 'Fábrica Crédito COOP',
+    title: 'Fábrica de Crédito',
     category: 'Credit automation',
     year: '2025',
     role: 'Desarrollador',
-    description: 'Sistema para digitalizar procesos de crédito mediante reglas de negocio, validaciones dinámicas y flujos de scoring.',
-    fullDescription: 'Participé en el diseño y desarrollo de una fábrica de crédito, integrando validaciones dinámicas, motores de reglas y procesos de scoring. El proyecto estuvo orientado a agilizar la evaluación crediticia y mejorar la eficiencia operativa en procesos financieros.',
+    description: 'Sistema central de gestión del ciclo de vida completo de solicitudes de crédito, desde la radicación hasta el desembolso, con workflow configurable y validación de políticas.',
+    fullDescription: 'Participé en el desarrollo de la Fábrica de Crédito, un sistema robusto de originación que automatiza y controla cada etapa del proceso crediticio. Construí módulos de bandeja de trámites, cambio de etapas con firma OTP, simulador de crédito con múltiples escenarios, validación automática de políticas, gestión documental y reportería especializada. El proyecto estandarizó los flujos de trabajo, garantizó trazabilidad completa y redujo significativamente los tiempos de procesamiento.',
     highlights: [
-      'Motor de reglas',
-      'Scoring',
-      'Validaciones dinámicas',
-      'Procesos financieros'
+      'Bandeja de trámites por rol',
+      'Workflow configurable por línea',
+      'Simulador de crédito',
+      'Validación de políticas',
+      'Firma OTP electrónica',
+      'Gestión documental',
+      'Reportería (Sábana de datos)'
     ],
-    technologies: ['Angular', 'Java', 'APIs', 'Validaciones dinámicas', 'Scoring', 'Seguridad']
+    technologies: ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'PostgreSQL', 'APIs REST', 'RxJS']
   },
   {
     title: 'WhatsApp Business Automation',
