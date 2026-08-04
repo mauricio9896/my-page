@@ -26,10 +26,6 @@ export class HeroComponent {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  downloadCV() {
-    window.open('/assets/cv/mauricio-buitrago-cv.pdf', '_blank');
-  }
-
   openLinkedIn() {
     window.open(this.profile.linkedin, '_blank');
   }

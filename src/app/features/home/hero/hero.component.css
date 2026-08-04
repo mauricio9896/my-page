@@ -137,7 +137,7 @@
 }
 
 .code-card {
-  background: rgba(17, 17, 17, 0.8);
+  background: rgba(17, 17, 17, 0.9);
   backdrop-filter: blur(20px);
   border-radius: 1rem;
   overflow: hidden;
@@ -232,5 +232,6 @@
 
   .metric-item {
     min-width: 100px;
+    width: 100%;
   }
 }

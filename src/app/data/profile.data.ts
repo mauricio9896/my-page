@@ -21,29 +21,25 @@ export interface Metric {
 
 export const PROFILE: Profile = {
   name: 'Mauricio Buitrago Puerto',
-  title: 'Frontend / Fullstack Developer',
+  title: 'Frontend Developer',
   subtitle: 'Angular · TypeScript · Java · Spring Boot',
   location: 'Bogotá D.C., Colombia',
   phone: '+57 318 383 3578',
   email: 'mauricio9896@hotmail.com',
   linkedin: 'https://linkedin.com/in/mauricio-buitrago',
   github: 'https://github.com/mauricio-buitrago',
-  badge: 'Disponible para proyectos frontend/fullstack · Angular · TypeScript · Java',
-  heroTitle: 'Construyo interfaces enterprise rápidas, seguras y escalables para productos financieros.',
-  heroSubtitle: 'Soy Mauricio Buitrago, Frontend / Fullstack Developer especializado en Angular, TypeScript, Java y arquitectura frontend. Desarrollo plataformas digitales modernas con foco en UI/UX, APIs, seguridad y eficiencia operativa.',
+  badge: 'Frontend Developer · Angular ',
+  heroTitle: 'Construyo plataformas digitales que simplifican lo complejo.',
+  heroSubtitle:
+    'Soy Mauricio Buitrago, desarrollador frontend especializado en Angular, con más de 3 años de experiencia creando productos financieros seguros, escalables y fáciles de usar.',
   aboutText: [
-    'Soy desarrollador Frontend / Fullstack con formación en Ingeniería Electrónica y experiencia construyendo soluciones digitales para banca, procesos empresariales y plataformas internas. Mi especialidad está en transformar requerimientos complejos en interfaces limpias, seguras y escalables, combinando Angular, TypeScript, Java, APIs y buenas prácticas de arquitectura.',
-    'He trabajado en productos financieros como suites virtuales, fábricas de crédito y aplicaciones internas, donde la seguridad, la confiabilidad y la experiencia de usuario son factores críticos. Me interesa crear software que no solo funcione bien, sino que también sea claro, mantenible y agradable de usar.'
+    'Soy desarrollador Frontend con experiencia construyendo soluciones digitales para banca, procesos empresariales y plataformas internas. Mi especialidad está en transformar requerimientos complejos en interfaces limpias, seguras y escalables.',
+    'He trabajado en productos financieros como suites virtuales, fábricas de crédito y aplicaciones internas, donde la seguridad, la confiabilidad y la experiencia de usuario son factores críticos.',
   ],
   metrics: [
-    { value: '3+', label: 'años de experiencia' },
-    { value: '4+', label: 'productos financieros' },
-    { value: '30%', label: 'mejora en automatización' },
-    { value: '25%', label: 'mejora en eficiencia' }
-  ]
+    { value: 'Automatización', label: 'de flujos' },
+    { value: '+3', label: 'años de experiencia' },
+    { value: 'Optimización', label: 'de procesos internos' },
+    { value: '+10', label: 'productos financieros' },
+  ],
 };
-
-
-// "Desarrollador Frontend con 3 años de experiencia especializado en la creación de interfaces robustas y escalables para el sector bancario utilizando Angular. Mi enfoque principal es la optimización del rendimiento y la seguridad en flujos transaccionales complejos.
-
-// He trabajado en la modernización de plataformas financieras, asegurando código limpio y mantenible. Apasionado por la arquitectura de software y la mejora continua del flujo de caja del usuario a través de interfaces intuitivas."

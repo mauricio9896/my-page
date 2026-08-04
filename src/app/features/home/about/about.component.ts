@@ -13,7 +13,7 @@ import { PROFILE } from '../../../data/profile.data';
       <div class="container-custom">
         <app-section-heading
           badge="Sobre mí"
-          title="Desarrollador con enfoque enterprise"
+          title="Desarrollador Frontend"
           [centered]="false"
         />
 
