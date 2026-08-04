@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, PLATFORM_ID, signal, HostListener } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { gsap } from 'gsap';
 
 interface Particle {
   x: number;
@@ -10,6 +9,8 @@ interface Particle {
   color: string;
   vx: number;
   vy: number;
+  twinkle: number;      // Para efecto de centelleo
+  twinkleSpeed: number; // Velocidad del centelleo
 }
 
 @Component({
@@ -23,7 +24,6 @@ interface Particle {
         [width]="canvasWidth"
         [height]="canvasHeight"
       ></canvas>
-      <div class="cursor-dot" [class.hover]="cursorState() === 'hover'"></div>
     }
   `,
   styles: [`
@@ -36,41 +36,17 @@ interface Particle {
       pointer-events: none;
       z-index: 9998;
     }
-
-    .cursor-dot {
-      position: fixed;
-      width: 8px;
-      height: 8px;
-      background: #fff;
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      mix-blend-mode: difference;
-      transition: transform 0.15s ease, background 0.2s ease;
-    }
-
-    .cursor-dot.hover {
-      transform: translate(-50%, -50%) scale(1.5);
-      background: var(--color-accent, #00FFB2);
-    }
-
-    :host-context(body.custom-cursor-active) * {
-      cursor: none !important;
-    }
   `]
 })
 export class CursorComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
 
   isVisible = signal(false);
-  cursorState = signal<'default' | 'hover' | 'click' | 'text'>('default');
   canvasWidth = 0;
   canvasHeight = 0;
 
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
-  private cursorDot: HTMLElement | null = null;
   private particles: Particle[] = [];
   private mouseX = 0;
   private mouseY = 0;
@@ -79,12 +55,10 @@ export class CursorComponent implements OnInit, OnDestroy {
   private rafId: number | null = null;
   private moveTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  // Colores para las partículas
+  // Color neón único - cian eléctrico
   private colors = [
-    'rgba(124, 58, 237, ',   // Purple
-    'rgba(0, 255, 178, ',     // Green accent
-    'rgba(139, 92, 246, ',    // Light purple
-    'rgba(255, 255, 255, ',   // White
+    'rgba(0, 255, 255, ',     // Cian neón puro
+    'rgba(50, 255, 255, ',    // Cian neón claro
   ];
 
   ngOnInit(): void {
@@ -99,23 +73,19 @@ export class CursorComponent implements OnInit, OnDestroy {
     this.canvasWidth = window.innerWidth;
     this.canvasHeight = window.innerHeight;
     this.isVisible.set(true);
-    document.body.classList.add('custom-cursor-active');
 
     requestAnimationFrame(() => {
       this.canvas = document.querySelector('.particle-canvas');
-      this.cursorDot = document.querySelector('.cursor-dot');
       if (this.canvas) {
         this.ctx = this.canvas.getContext('2d');
       }
       this.animate();
-      this.setupHoverListeners();
     });
   }
 
   ngOnDestroy(): void {
     if (this.rafId) cancelAnimationFrame(this.rafId);
     if (this.moveTimeout) clearTimeout(this.moveTimeout);
-    document.body.classList.remove('custom-cursor-active');
   }
 
   @HostListener('window:resize')
@@ -129,11 +99,6 @@ export class CursorComponent implements OnInit, OnDestroy {
     this.mouseX = e.clientX;
     this.mouseY = e.clientY;
 
-    // Mover el punto del cursor
-    if (this.cursorDot) {
-      gsap.set(this.cursorDot, { x: this.mouseX, y: this.mouseY });
-    }
-
     // Crear partículas mientras se mueve
     this.createParticles(e.clientX, e.clientY);
 
@@ -146,14 +111,8 @@ export class CursorComponent implements OnInit, OnDestroy {
 
   @HostListener('document:mousedown')
   onMouseDown(): void {
-    this.cursorState.set('click');
     // Explosión de partículas al hacer click
-    this.createParticleBurst(this.mouseX, this.mouseY, 15);
-  }
-
-  @HostListener('document:mouseup')
-  onMouseUp(): void {
-    this.cursorState.set('default');
+    this.createParticleBurst(this.mouseX, this.mouseY, 20);
   }
 
   private createParticles(x: number, y: number): void {
@@ -162,22 +121,29 @@ export class CursorComponent implements OnInit, OnDestroy {
     const dy = y - this.lastMouseY;
     const speed = Math.sqrt(dx * dx + dy * dy);
 
-    // Más partículas cuando se mueve más rápido
-    const particleCount = Math.min(Math.floor(speed / 5) + 1, 5);
+    // Solo generar partículas si el movimiento es mayor a 20px
+    if (speed < 20) {
+      return;
+    }
+
+    // Polvo galáctico neón: muchas más partículas
+    const particleCount = Math.min(Math.floor(speed / 3) + 3, 10);
 
     for (let i = 0; i < particleCount; i++) {
       const color = this.colors[Math.floor(Math.random() * this.colors.length)];
       const angle = Math.random() * Math.PI * 2;
-      const spread = Math.random() * 20;
+      const spread = Math.random() * 15;
 
       this.particles.push({
         x: x + Math.cos(angle) * spread,
         y: y + Math.sin(angle) * spread,
-        size: Math.random() * 4 + 2,
-        alpha: Math.random() * 0.5 + 0.5,
+        size: Math.random() * 1.5 + 0.5, // Partículas pequeñas
+        alpha: Math.random() * 0.5 + 0.3,
         color,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2 + 0.5 // Ligera gravedad
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2 - 0.3,
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.15 + 0.08
       });
     }
 
@@ -185,25 +151,27 @@ export class CursorComponent implements OnInit, OnDestroy {
     this.lastMouseY = y;
 
     // Limitar cantidad de partículas
-    if (this.particles.length > 150) {
-      this.particles = this.particles.slice(-150);
+    if (this.particles.length > 300) {
+      this.particles = this.particles.slice(-300);
     }
   }
 
   private createParticleBurst(x: number, y: number, count: number): void {
     for (let i = 0; i < count; i++) {
       const color = this.colors[Math.floor(Math.random() * this.colors.length)];
-      const angle = (Math.PI * 2 / count) * i;
-      const speed = Math.random() * 5 + 3;
+      const angle = (Math.PI * 2 / count) * i + Math.random() * 0.3;
+      const speed = Math.random() * 2 + 1;
 
       this.particles.push({
         x,
         y,
-        size: Math.random() * 6 + 3,
-        alpha: 1,
+        size: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.5 + 0.4,
         color,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed
+        vy: Math.sin(angle) * speed,
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.2 + 0.1
       });
     }
   }
@@ -219,24 +187,33 @@ export class CursorComponent implements OnInit, OnDestroy {
 
     // Actualizar y dibujar partículas
     this.particles = this.particles.filter(p => {
-      // Actualizar posición
+      // Actualizar posición - movimiento flotante suave
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.02; // Gravedad suave
-      p.alpha -= 0.015; // Fade out
-      p.size *= 0.98; // Encogerse
+      p.vy -= 0.005; // Anti-gravedad muy suave - flotan hacia arriba
+      p.alpha -= 0.006; // Fade out más lento
+      p.twinkle += p.twinkleSpeed; // Actualizar centelleo
 
-      if (p.alpha <= 0 || p.size < 0.5) return false;
+      if (p.alpha <= 0 || p.size < 0.2) return false;
 
-      // Dibujar partícula
+      // Efecto de centelleo - alpha varía con seno
+      const twinkleAlpha = p.alpha * (0.6 + Math.sin(p.twinkle) * 0.4);
+
+      // Dibujar partícula principal
       this.ctx!.beginPath();
       this.ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      this.ctx!.fillStyle = p.color + p.alpha + ')';
+      this.ctx!.fillStyle = p.color + twinkleAlpha + ')';
       this.ctx!.fill();
 
-      // Añadir glow
-      this.ctx!.shadowBlur = 10;
-      this.ctx!.shadowColor = p.color + '0.5)';
+      // Glow neón intenso
+      this.ctx!.shadowBlur = p.size * 6;
+      this.ctx!.shadowColor = p.color + (twinkleAlpha * 0.8) + ')';
+
+      // Dibujar halo exterior muy sutil
+      this.ctx!.beginPath();
+      this.ctx!.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+      this.ctx!.fillStyle = p.color + (twinkleAlpha * 0.15) + ')';
+      this.ctx!.fill();
 
       return true;
     });
@@ -244,31 +221,5 @@ export class CursorComponent implements OnInit, OnDestroy {
     this.ctx.shadowBlur = 0;
 
     this.rafId = requestAnimationFrame(() => this.animate());
-  }
-
-  private setupHoverListeners(): void {
-    const interactiveElements = document.querySelectorAll(
-      'a, button, [role="button"], .clickable, app-glow-button, .project-card, .glass-card'
-    );
-
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', () => this.cursorState.set('hover'));
-      el.addEventListener('mouseleave', () => this.cursorState.set('default'));
-    });
-
-    // Observer para elementos dinámicos
-    const observer = new MutationObserver(() => {
-      const newInteractive = document.querySelectorAll(
-        'a:not([data-cursor-bound]), button:not([data-cursor-bound]), app-glow-button:not([data-cursor-bound]), .project-card:not([data-cursor-bound]), .glass-card:not([data-cursor-bound])'
-      );
-
-      newInteractive.forEach(el => {
-        el.setAttribute('data-cursor-bound', 'true');
-        el.addEventListener('mouseenter', () => this.cursorState.set('hover'));
-        el.addEventListener('mouseleave', () => this.cursorState.set('default'));
-      });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
   }
 }
