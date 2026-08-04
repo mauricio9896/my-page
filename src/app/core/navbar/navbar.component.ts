@@ -16,7 +16,6 @@ import { CommonModule } from '@angular/common';
         <div class="navbar-links">
           <a href="#about" class="nav-link">Sobre mí</a>
           <a href="#stack" class="nav-link">Stack</a>
-          <a href="#experience" class="nav-link">Experiencia</a>
           <a href="#projects" class="nav-link">Proyectos</a>
           <a href="#contact" class="nav-link nav-link-cta">Contacto</a>
         </div>
