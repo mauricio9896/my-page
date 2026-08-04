@@ -4,7 +4,6 @@ import { FooterComponent } from './core/footer/footer.component';
 import { HeroComponent } from './features/home/hero/hero.component';
 import { AboutComponent } from './features/home/about/about.component';
 import { StackComponent } from './features/home/stack/stack.component';
-import { ExperienceComponent } from './features/home/experience/experience.component';
 import { ProjectsComponent } from './features/home/projects/projects.component';
 import { TimelineComponent } from './features/home/timeline/timeline.component';
 import { ContactComponent } from './features/home/contact/contact.component';
@@ -19,7 +18,6 @@ import { CursorComponent } from './shared/components/cursor/cursor.component';
     HeroComponent,
     AboutComponent,
     StackComponent,
-    ExperienceComponent,
     ProjectsComponent,
     TimelineComponent,
     ContactComponent,

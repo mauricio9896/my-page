@@ -3,12 +3,11 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { GlowButtonComponent } from '../../../shared/components/glow-button/glow-button.component';
 import { PROFILE } from '../../../data/profile.data';
 import { AnimationService } from '../../../shared/services/animation.service';
-import { ParallaxDirective } from '../../../shared/directives/parallax.directive';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports: [CommonModule, GlowButtonComponent, ParallaxDirective],
+  imports: [CommonModule, GlowButtonComponent],
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.css'
 })
@@ -34,12 +33,11 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Pequeño delay para asegurar que el DOM está listo
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       if (this.heroSection?.nativeElement) {
         this.timeline = this.animationService.heroEntrance(this.heroSection.nativeElement);
       }
-    });
+    }, 100);
   }
 
   ngOnDestroy(): void {

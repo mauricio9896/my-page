@@ -18,7 +18,7 @@ export class RevealDirective implements OnInit, OnDestroy {
   @Input() revealDelay: number = 0;
   @Input() revealDistance: number = 60;
   @Input() revealThreshold: number = 0.2;
-  @Input() revealOnce: boolean = true;
+  @Input() revealOnce: boolean = false;
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
