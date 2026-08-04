@@ -15,7 +15,7 @@ import { TECH_STACK } from '../../../data/stack.data';
         <app-section-heading
           badge="Stack tecnológico"
           title="Herramientas que domino"
-          subtitle="Tecnologías con las que construyo productos digitales robustos y escalables."
+          subtitle=""
           [centered]="true"
         />
 

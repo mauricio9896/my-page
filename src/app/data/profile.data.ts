@@ -3,7 +3,6 @@ export interface Profile {
   title: string;
   subtitle: string;
   location: string;
-  phone: string;
   email: string;
   linkedin: string;
   github: string;
@@ -24,8 +23,7 @@ export const PROFILE: Profile = {
   title: 'Frontend Developer',
   subtitle: 'Angular · TypeScript · Java · Spring Boot',
   location: 'Bogotá D.C., Colombia',
-  phone: '+57 318 383 3578',
-  email: 'mauricio9896@hotmail.com',
+  email: 'mauricio.buitrago010@gmail.com',
   linkedin: 'https://linkedin.com/in/mauricio-buitrago',
   github: 'https://github.com/mauricio-buitrago',
   badge: 'Frontend Developer · Angular ',

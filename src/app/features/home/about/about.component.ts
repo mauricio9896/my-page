@@ -56,17 +56,6 @@ import { PROFILE } from '../../../data/profile.data';
             </app-glass-card>
           </div>
         </div>
-
-        <!-- How I Work Section -->
-        <div class="how-i-work">
-          <h3>Cómo trabajo</h3>
-          <p>
-            Trabajo con enfoque en claridad, mantenibilidad y experiencia de usuario.
-            Me gusta construir interfaces limpias, componentes reutilizables y flujos
-            que reduzcan fricción operativa. Priorizo código entendible, arquitectura
-            escalable, comunicación con equipos y alineación con objetivos de negocio.
-          </p>
-        </div>
       </div>
     </section>
   `,
@@ -120,27 +109,6 @@ import { PROFILE } from '../../../data/profile.data';
     .highlight-content p {
       font-size: 0.9375rem;
       color: #71717A;
-      margin: 0;
-    }
-
-    .how-i-work {
-      background: rgba(24, 24, 27, 0.4);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      border: 1px solid rgba(124, 58, 237, 0.1);
-    }
-
-    .how-i-work h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #F8FAFC;
-      margin: 0 0 1rem;
-    }
-
-    .how-i-work p {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: #A1A1AA;
       margin: 0;
     }
 

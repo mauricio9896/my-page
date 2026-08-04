@@ -15,7 +15,7 @@ import { EXPERIENCES } from '../../../data/experience.data';
         <app-section-heading
           badge="Experiencia"
           title="Trayectoria profesional"
-          subtitle="Mi recorrido construyendo soluciones digitales para empresas y el sector financiero."
+          subtitle="Mi recorrido construyendo soluciones digitales."
           [centered]="false"
         />
 
