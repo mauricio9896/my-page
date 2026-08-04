@@ -114,7 +114,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `,
   styles: [`
     .projects {
-      background: linear-gradient(180deg, #111111 0%, #0B0B0B 100%);
+      background: transparent;
+      position: relative;
     }
 
     .projects-grid {

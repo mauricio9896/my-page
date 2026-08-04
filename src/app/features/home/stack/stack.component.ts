@@ -47,7 +47,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `,
   styles: [`
     .stack {
-      background: linear-gradient(180deg, #0B0B0B 0%, #111111 100%);
+      background: transparent;
+      position: relative;
     }
 
     .stack-grid {

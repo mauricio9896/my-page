@@ -64,7 +64,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `,
   styles: [`
     .about {
-      background: #0B0B0B;
+      background: transparent;
+      position: relative;
     }
 
     .about-content {

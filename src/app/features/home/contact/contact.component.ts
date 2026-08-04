@@ -82,7 +82,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   styles: [
     `
       .contact {
-        background: linear-gradient(180deg, #0b0b0b 0%, #111111 100%);
+        background: transparent;
+        position: relative;
       }
 
       .contact-content {

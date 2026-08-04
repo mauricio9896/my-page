@@ -39,9 +39,10 @@ import { PROFILE } from '../../data/profile.data';
   `,
   styles: [`
     .footer {
-      background: #0B0B0B;
+      background: transparent;
       border-top: 1px solid rgba(124, 58, 237, 0.1);
       padding: 4rem 0 2rem;
+      position: relative;
     }
 
     .footer-container {

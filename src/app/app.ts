@@ -8,6 +8,7 @@ import { ProjectsComponent } from './features/home/projects/projects.component';
 import { TimelineComponent } from './features/home/timeline/timeline.component';
 import { ContactComponent } from './features/home/contact/contact.component';
 import { CursorComponent } from './shared/components/cursor/cursor.component';
+import { InteractiveBackgroundComponent } from './shared/components/interactive-background/interactive-background.component';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ import { CursorComponent } from './shared/components/cursor/cursor.component';
     ProjectsComponent,
     TimelineComponent,
     ContactComponent,
-    CursorComponent
+    CursorComponent,
+    InteractiveBackgroundComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

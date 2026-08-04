@@ -46,7 +46,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `,
   styles: [`
     .timeline {
-      background: #0B0B0B;
+      background: transparent;
+      position: relative;
     }
 
     .timeline-container {
