@@ -1,31 +1,31 @@
-<section class="hero">
+<section class="hero" #heroSection>
   <!-- Background Effects -->
   <div class="hero-bg">
-    <div class="gradient-orb gradient-orb-1"></div>
-    <div class="gradient-orb gradient-orb-2"></div>
+    <div class="gradient-orb gradient-orb-1" [appParallax]="0.3"></div>
+    <div class="gradient-orb gradient-orb-2" [appParallax]="-0.2"></div>
     <div class="grid-pattern"></div>
   </div>
 
   <div class="hero-container">
     <div class="hero-content">
       <!-- Badge -->
-      <div class="hero-badge animate-fade-up">
+      <div class="hero-badge" style="opacity: 0;">
         <span class="badge-dot"></span>
         {{ profile.badge }}
       </div>
 
       <!-- Title -->
-      <h1 class="hero-title animate-fade-up" style="animation-delay: 0.1s">
+      <h1 class="hero-title" style="opacity: 0;">
         {{ profile.heroTitle }}
       </h1>
 
       <!-- Subtitle -->
-      <p class="hero-subtitle animate-fade-up" style="animation-delay: 0.2s">
+      <p class="hero-subtitle" style="opacity: 0;">
         {{ profile.heroSubtitle }}
       </p>
 
       <!-- CTA Buttons -->
-      <div class="hero-cta animate-fade-up" style="animation-delay: 0.3s">
+      <div class="hero-cta" style="opacity: 0;">
         <app-glow-button variant="primary" (onClick)="scrollToProjects()">
           Ver proyectos
         </app-glow-button>
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Metrics -->
-      <div class="hero-metrics animate-fade-up" style="animation-delay: 0.4s">
+      <div class="hero-metrics" style="opacity: 0;">
         @for (metric of profile.metrics; track metric.label) {
           <div class="metric-item">
             <span class="metric-value">{{ metric.value }}</span>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Code Preview Card -->
-    <div class="hero-visual animate-fade-up" style="animation-delay: 0.5s">
+    <div class="hero-visual" style="opacity: 0;">
       <div class="code-card">
         <div class="code-header">
           <div class="code-dots">

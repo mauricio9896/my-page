@@ -4,24 +4,27 @@ import { SectionHeadingComponent } from '../../../shared/components/section-head
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { TechChipComponent } from '../../../shared/components/tech-chip/tech-chip.component';
 import { TECH_STACK } from '../../../data/stack.data';
+import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-stack',
   standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent],
+  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
   template: `
     <section id="stack" class="stack section-padding">
       <div class="container-custom">
-        <app-section-heading
-          badge="Stack tecnológico"
-          title="Herramientas que domino"
-          subtitle=""
-          [centered]="true"
-        />
+        <div appReveal="up">
+          <app-section-heading
+            badge="Stack tecnológico"
+            title="Herramientas que domino"
+            subtitle=""
+            [centered]="true"
+          />
+        </div>
 
         <div class="stack-grid">
-          @for (category of techStack; track category.name) {
-            <app-glass-card>
+          @for (category of techStack; track category.name; let i = $index) {
+            <app-glass-card appReveal="scale" [revealDelay]="i * 0.1">
               <div class="stack-category">
                 <div class="category-header">
                   <span class="category-icon">{{ category.icon }}</span>

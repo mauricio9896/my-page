@@ -255,3 +255,51 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary);
 }
+
+/* ============================================
+   Custom Cursor
+   ============================================ */
+
+body.custom-cursor-active,
+body.custom-cursor-active * {
+  cursor: none !important;
+}
+
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active [role="button"] {
+  cursor: none !important;
+}
+
+/* ============================================
+   GSAP Reveal Animation Defaults
+   ============================================ */
+
+[appReveal] {
+  will-change: transform, opacity;
+}
+
+/* ============================================
+   Smooth Scroll with GSAP compatibility
+   ============================================ */
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+

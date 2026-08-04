@@ -3,29 +3,32 @@ import { CommonModule } from '@angular/common';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { PROFILE } from '../../../data/profile.data';
+import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent],
+  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, RevealDirective],
   template: `
     <section id="about" class="about section-padding">
       <div class="container-custom">
-        <app-section-heading
-          badge="Sobre mí"
-          title="Desarrollador Frontend"
-          [centered]="false"
-        />
+        <div appReveal="up" [revealDelay]="0">
+          <app-section-heading
+            badge="Sobre mí"
+            title="Desarrollador Frontend"
+            [centered]="false"
+          />
+        </div>
 
         <div class="about-content">
-          <div class="about-text">
+          <div class="about-text" appReveal="up" [revealDelay]="0.1">
             @for (paragraph of profile.aboutText; track $index) {
               <p>{{ paragraph }}</p>
             }
           </div>
 
           <div class="about-highlights">
-            <app-glass-card [hoverable]="false" [glowOnHover]="false">
+            <app-glass-card [hoverable]="false" [glowOnHover]="false" appReveal="right" [revealDelay]="0.2">
               <div class="highlight-item">
                 <span class="highlight-icon">🎯</span>
                 <div class="highlight-content">
@@ -35,7 +38,7 @@ import { PROFILE } from '../../../data/profile.data';
               </div>
             </app-glass-card>
 
-            <app-glass-card [hoverable]="false" [glowOnHover]="false">
+            <app-glass-card [hoverable]="false" [glowOnHover]="false" appReveal="right" [revealDelay]="0.3">
               <div class="highlight-item">
                 <span class="highlight-icon">🏦</span>
                 <div class="highlight-content">
@@ -45,7 +48,7 @@ import { PROFILE } from '../../../data/profile.data';
               </div>
             </app-glass-card>
 
-            <app-glass-card [hoverable]="false" [glowOnHover]="false">
+            <app-glass-card [hoverable]="false" [glowOnHover]="false" appReveal="right" [revealDelay]="0.4">
               <div class="highlight-item">
                 <span class="highlight-icon">⚡</span>
                 <div class="highlight-content">

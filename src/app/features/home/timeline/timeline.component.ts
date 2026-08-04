@@ -2,19 +2,22 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { TIMELINE } from '../../../data/timeline.data';
+import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [CommonModule, SectionHeadingComponent],
+  imports: [CommonModule, SectionHeadingComponent, RevealDirective],
   template: `
     <section id="timeline" class="timeline section-padding">
       <div class="container-custom">
-        <app-section-heading
-          badge="Trayectoria"
-          title="Mi evolución profesional"
-          [centered]="true"
-        />
+        <div appReveal="up">
+          <app-section-heading
+            badge="Trayectoria"
+            title="Mi evolución profesional"
+            [centered]="true"
+          />
+        </div>
 
         <div class="timeline-container">
           <div class="timeline-line"></div>
@@ -24,6 +27,8 @@ import { TIMELINE } from '../../../data/timeline.data';
               class="timeline-item"
               [class.left]="i % 2 === 0"
               [class.right]="i % 2 !== 0"
+              [appReveal]="i % 2 === 0 ? 'left' : 'right'"
+              [revealDelay]="i * 0.15"
             >
               <div class="timeline-node">
                 <span class="node-year">{{ item.year }}</span>

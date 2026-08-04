@@ -4,24 +4,27 @@ import { SectionHeadingComponent } from '../../../shared/components/section-head
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { TechChipComponent } from '../../../shared/components/tech-chip/tech-chip.component';
 import { PROJECTS, Project } from '../../../data/projects.data';
+import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent],
+  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
   template: `
     <section id="projects" class="projects section-padding">
       <div class="container-custom">
-        <app-section-heading
-          badge="Proyectos"
-          title="Productos destacados"
-          subtitle="Plataformas y soluciones en las que he contribuido para transformar procesos digitales."
-          [centered]="true"
-        />
+        <div appReveal="up">
+          <app-section-heading
+            badge="Proyectos"
+            title="Productos destacados"
+            subtitle="Plataformas y soluciones en las que he contribuido para transformar procesos digitales."
+            [centered]="true"
+          />
+        </div>
 
         <div class="projects-grid">
-          @for (project of projects; track project.title) {
-            <app-glass-card class="project-card" (click)="openProject(project)">
+          @for (project of projects; track project.title; let i = $index) {
+            <app-glass-card class="project-card" (click)="openProject(project)" appReveal="up" [revealDelay]="i * 0.15">
               <div class="project-content">
                 <div class="project-header">
                   <span class="project-category">{{ project.category }}</span>

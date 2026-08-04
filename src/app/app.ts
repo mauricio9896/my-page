@@ -8,6 +8,7 @@ import { ExperienceComponent } from './features/home/experience/experience.compo
 import { ProjectsComponent } from './features/home/projects/projects.component';
 import { TimelineComponent } from './features/home/timeline/timeline.component';
 import { ContactComponent } from './features/home/contact/contact.component';
+import { CursorComponent } from './shared/components/cursor/cursor.component';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ import { ContactComponent } from './features/home/contact/contact.component';
     ExperienceComponent,
     ProjectsComponent,
     TimelineComponent,
-    ContactComponent
+    ContactComponent,
+    CursorComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

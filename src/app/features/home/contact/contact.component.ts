@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { GlowButtonComponent } from '../../../shared/components/glow-button/glow-button.component';
 import { PROFILE } from '../../../data/profile.data';
+import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, GlassCardComponent, GlowButtonComponent],
+  imports: [CommonModule, GlassCardComponent, GlowButtonComponent, RevealDirective],
   template: `
     <section id="contact" class="contact section-padding">
       <div class="container-custom">
         <div class="contact-content">
-          <div class="contact-text">
+          <div class="contact-text" appReveal="up">
             <span class="contact-badge">Contacto</span>
             <h2 class="contact-title">
               ¿Construimos una experiencia digital segura, moderna y escalable?
