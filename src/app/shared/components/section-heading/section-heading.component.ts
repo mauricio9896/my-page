@@ -1,15 +1,17 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-section-heading',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="section-heading" [class.center]="centered">
-      <span class="section-badge" *ngIf="badge">{{ badge }}</span>
-      <h2 class="section-title">{{ title }}</h2>
-      <p class="section-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+    <div class="section-heading" [class.center]="centered()">
+      @if (badge()) {
+        <span class="section-badge">{{ badge() }}</span>
+      }
+      <h2 class="section-title">{{ title() }}</h2>
+      @if (subtitle()) {
+        <p class="section-subtitle">{{ subtitle() }}</p>
+      }
     </div>
   `,
   styles: [`
@@ -57,8 +59,8 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class SectionHeadingComponent {
-  @Input() badge = '';
-  @Input() title = '';
-  @Input() subtitle = '';
-  @Input() centered = false;
+  readonly badge = input('');
+  readonly title = input('');
+  readonly subtitle = input('');
+  readonly centered = input(false);
 }

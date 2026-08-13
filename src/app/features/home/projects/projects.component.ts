@@ -1,5 +1,14 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { TechChipComponent } from '../../../shared/components/tech-chip/tech-chip.component';
@@ -8,8 +17,11 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-projects',
-  standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
+  host: {
+    '(document:keydown.escape)': 'closeProject()'
+  },
   template: `
     <section id="projects" class="projects section-padding">
       <div class="container-custom">
@@ -24,7 +36,17 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
         <div class="projects-grid">
           @for (project of projects; track project.title; let i = $index) {
-            <app-glass-card class="project-card" (click)="openProject(project)" appReveal="up" [revealDelay]="i * 0.15">
+            <app-glass-card
+              class="project-card"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'Ver detalles del proyecto ' + project.title"
+              (click)="openProject(project)"
+              (keydown.enter)="openProject(project)"
+              (keydown.space)="onCardSpace($event, project)"
+              appReveal="up"
+              [revealDelay]="i * 0.15"
+            >
               <div class="project-content">
                 <div class="project-header">
                   <span class="project-category">{{ project.category }}</span>
@@ -46,13 +68,15 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
                   }
                 </div>
 
-                <div class="project-impact" *ngIf="project.impact">
-                  <span class="impact-label">Impacto:</span>
-                  <span class="impact-value">{{ project.impact }}</span>
-                </div>
+                @if (project.impact) {
+                  <div class="project-impact">
+                    <span class="impact-label">Impacto:</span>
+                    <span class="impact-value">{{ project.impact }}</span>
+                  </div>
+                }
               </div>
 
-              <div class="project-hover-indicator">
+              <div class="project-hover-indicator" aria-hidden="true">
                 <span>Ver detalles</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -65,35 +89,49 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
     </section>
 
     <!-- Project Modal -->
-    @if (selectedProject()) {
+    @if (selectedProject(); as project) {
       <div class="modal-overlay" (click)="closeProject()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <button class="modal-close" (click)="closeProject()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div
+          #modal
+          class="modal-content"
+          role="dialog"
+          aria-modal="true"
+          [attr.aria-labelledby]="modalTitleId"
+          tabindex="-1"
+          (click)="$event.stopPropagation()"
+          (keydown)="onModalKeydown($event)"
+        >
+          <button
+            type="button"
+            class="modal-close"
+            aria-label="Cerrar detalles del proyecto"
+            (click)="closeProject()"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
           </button>
 
           <div class="modal-header">
-            <span class="modal-category">{{ selectedProject()!.category }}</span>
-            <h2 class="modal-title">{{ selectedProject()!.title }}</h2>
+            <span class="modal-category">{{ project.category }}</span>
+            <h2 class="modal-title" [id]="modalTitleId">{{ project.title }}</h2>
             <div class="modal-meta">
-              <span>{{ selectedProject()!.role }}</span>
-              <span>·</span>
-              <span>{{ selectedProject()!.year }}</span>
+              <span>{{ project.role }}</span>
+              <span aria-hidden="true">·</span>
+              <span>{{ project.year }}</span>
             </div>
           </div>
 
           <div class="modal-body">
             <div class="modal-section">
               <h4>Descripción</h4>
-              <p>{{ selectedProject()!.fullDescription }}</p>
+              <p>{{ project.fullDescription }}</p>
             </div>
 
             <div class="modal-section">
               <h4>Impacto</h4>
               <ul>
-                @for (highlight of selectedProject()!.highlights; track highlight) {
+                @for (highlight of project.highlights; track highlight) {
                   <li>{{ highlight }}</li>
                 }
               </ul>
@@ -102,7 +140,7 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
             <div class="modal-section">
               <h4>Stack tecnológico</h4>
               <div class="modal-tech">
-                @for (tech of selectedProject()!.technologies; track tech) {
+                @for (tech of project.technologies; track tech) {
                   <app-tech-chip [technology]="tech" [highlighted]="true" />
                 }
               </div>
@@ -128,6 +166,12 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      border-radius: 1.25rem;
+    }
+
+    .project-card:focus-visible {
+      outline: 2px solid #7C3AED;
+      outline-offset: 4px;
     }
 
     .project-content {
@@ -225,10 +269,16 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
       transition: all 0.3s ease;
     }
 
-    .project-card:hover .project-hover-indicator {
+    .project-card:hover .project-hover-indicator,
+    .project-card:focus-visible .project-hover-indicator {
       opacity: 1;
       transform: translateX(0);
       color: #7C3AED;
+    }
+
+    .modal-close:focus-visible {
+      outline: 2px solid #7C3AED;
+      outline-offset: 2px;
     }
 
     /* Modal */
@@ -384,16 +434,72 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `]
 })
 export class ProjectsComponent {
-  projects = PROJECTS;
-  selectedProject = signal<Project | null>(null);
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
 
-  openProject(project: Project) {
-    this.selectedProject.set(project);
-    document.body.style.overflow = 'hidden';
+  private readonly modalRef = viewChild<ElementRef<HTMLElement>>('modal');
+
+  protected readonly projects = PROJECTS;
+  protected readonly selectedProject = signal<Project | null>(null);
+  protected readonly modalTitleId = 'project-modal-title';
+
+  /** Elemento que abrió el modal, para devolverle el foco al cerrarlo. */
+  private previouslyFocused: HTMLElement | null = null;
+
+  /** La barra espaciadora activa la tarjeta sin desplazar la página. */
+  protected onCardSpace(event: Event, project: Project): void {
+    event.preventDefault();
+    this.openProject(project);
   }
 
-  closeProject() {
+  protected openProject(project: Project): void {
+    this.previouslyFocused = this.document.activeElement as HTMLElement | null;
+    this.selectedProject.set(project);
+    this.document.body.style.overflow = 'hidden';
+
+    afterNextRender(
+      () => this.modalRef()?.nativeElement.focus(),
+      { injector: this.injector }
+    );
+  }
+
+  protected closeProject(): void {
+    if (!this.selectedProject()) return;
+
     this.selectedProject.set(null);
-    document.body.style.overflow = '';
+    this.document.body.style.overflow = '';
+    this.previouslyFocused?.focus();
+    this.previouslyFocused = null;
+  }
+
+  /** Mantiene el foco dentro del diálogo mientras está abierto. */
+  protected onModalKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+
+    const focusables = this.getFocusableElements();
+    if (!focusables.length) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = this.document.activeElement;
+
+    if (event.shiftKey && (active === first || active === this.modalRef()?.nativeElement)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  private getFocusableElements(): HTMLElement[] {
+    const modal = this.modalRef()?.nativeElement;
+    if (!modal) return [];
+
+    return Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    );
   }
 }

@@ -1,9 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-// Registrar plugins de GSAP
-gsap.registerPlugin(ScrollTrigger);
 
 export type RevealDirection = 'up' | 'down' | 'left' | 'right' | 'scale' | 'fade';
 
@@ -26,14 +24,21 @@ export interface ParallaxOptions {
   providedIn: 'root'
 })
 export class AnimationService {
+  private readonly platformId = inject(PLATFORM_ID);
   private scrollTriggers: ScrollTrigger[] = [];
   cursorState = signal<'default' | 'hover' | 'click' | 'text'>('default');
 
   constructor() {
-    this.initScrollTrigger();
+    // El registro de plugins toca APIs del navegador (matchMedia), por eso se
+    // hace aquí y no al importar el módulo: así el service es seguro en SSR y tests.
+    if (isPlatformBrowser(this.platformId)) {
+      this.initScrollTrigger();
+    }
   }
 
   private initScrollTrigger(): void {
+    gsap.registerPlugin(ScrollTrigger);
+
     ScrollTrigger.defaults({
       toggleActions: 'play none none reverse',
       markers: false
@@ -163,10 +168,15 @@ export class AnimationService {
     return trigger;
   }
 
-  magneticEffect(element: HTMLElement, strength: number = 0.3): void {
-    const rect = element.getBoundingClientRect();
-
-    element.addEventListener('mousemove', (e) => {
+  /**
+   * Aplica el efecto magnético y devuelve la función de limpieza que el
+   * consumidor debe invocar al destruirse.
+   */
+  magneticEffect(element: HTMLElement, strength: number = 0.3): () => void {
+    const onMouseMove = (e: MouseEvent): void => {
+      // El rect se recalcula en cada movimiento: si se recuerda del inicio,
+      // cualquier scroll o resize desplaza el centro del imán.
+      const rect = element.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
 
@@ -176,16 +186,25 @@ export class AnimationService {
         duration: 0.3,
         ease: 'power2.out'
       });
-    });
+    };
 
-    element.addEventListener('mouseleave', () => {
+    const onMouseLeave = (): void => {
       gsap.to(element, {
         x: 0,
         y: 0,
         duration: 0.5,
         ease: 'elastic.out(1, 0.5)'
       });
-    });
+    };
+
+    element.addEventListener('mousemove', onMouseMove);
+    element.addEventListener('mouseleave', onMouseLeave);
+
+    return () => {
+      element.removeEventListener('mousemove', onMouseMove);
+      element.removeEventListener('mouseleave', onMouseLeave);
+      gsap.killTweensOf(element);
+    };
   }
 
   refresh(): void {

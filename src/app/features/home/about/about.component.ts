@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { PROFILE } from '../../../data/profile.data';
@@ -7,8 +6,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-about',
-  standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, RevealDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SectionHeadingComponent, GlassCardComponent, RevealDirective],
   template: `
     <section id="about" class="about section-padding">
       <div class="container-custom">
@@ -131,5 +130,5 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `]
 })
 export class AboutComponent {
-  profile = PROFILE;
+  protected readonly profile = PROFILE;
 }

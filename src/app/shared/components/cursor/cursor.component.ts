@@ -1,5 +1,15 @@
-import { Component, OnInit, OnDestroy, inject, PLATFORM_ID, signal, HostListener } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  PLATFORM_ID,
+  afterNextRender,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 interface Particle {
   x: number;
@@ -15,15 +25,10 @@ interface Particle {
 
 @Component({
   selector: 'app-cursor',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isVisible()) {
-      <canvas
-        class="particle-canvas"
-        [width]="canvasWidth"
-        [height]="canvasHeight"
-      ></canvas>
+      <canvas #canvas class="particle-canvas" aria-hidden="true"></canvas>
     }
   `,
   styles: [`
@@ -38,22 +43,23 @@ interface Particle {
     }
   `]
 })
-export class CursorComponent implements OnInit, OnDestroy {
-  private platformId = inject(PLATFORM_ID);
+export class CursorComponent {
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
 
-  isVisible = signal(false);
-  canvasWidth = 0;
-  canvasHeight = 0;
+  private readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
-  private canvas: HTMLCanvasElement | null = null;
+  protected readonly isVisible = signal(false);
+
   private ctx: CanvasRenderingContext2D | null = null;
+  private width = 0;
+  private height = 0;
   private particles: Particle[] = [];
   private mouseX = 0;
   private mouseY = 0;
   private lastMouseX = 0;
   private lastMouseY = 0;
   private rafId: number | null = null;
-  private moveTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // Color neón único - cian eléctrico
   private colors = [
@@ -61,58 +67,66 @@ export class CursorComponent implements OnInit, OnDestroy {
     'rgba(50, 255, 255, ',    // Cian neón claro
   ];
 
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice) {
-      this.isVisible.set(false);
-      return;
+  constructor() {
+    if (isPlatformBrowser(this.platformId) && this.supportsCursorEffect()) {
+      this.isVisible.set(true);
     }
 
-    this.canvasWidth = window.innerWidth;
-    this.canvasHeight = window.innerHeight;
-    this.isVisible.set(true);
+    afterNextRender(() => this.setup());
+  }
 
-    requestAnimationFrame(() => {
-      this.canvas = document.querySelector('.particle-canvas');
-      if (this.canvas) {
-        this.ctx = this.canvas.getContext('2d');
-      }
-      this.animate();
+  private supportsCursorEffect(): boolean {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    return !isTouchDevice && !prefersReducedMotion;
+  }
+
+  private setup(): void {
+    // El canvas se resuelve por referencia de plantilla: un `document.querySelector`
+    // por clase devolvería el canvas del fondo interactivo, que usa la misma clase.
+    const canvas = this.canvasRef()?.nativeElement;
+    if (!canvas) return;
+
+    this.ctx = canvas.getContext('2d');
+    if (!this.ctx) return;
+
+    const doc = canvas.ownerDocument;
+    const win = doc.defaultView;
+    if (!win) return;
+
+    this.resize(canvas, win);
+
+    const onResize = () => this.resize(canvas, win);
+    const onMouseMove = (e: MouseEvent) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+      this.createParticles(e.clientX, e.clientY);
+    };
+    const onMouseDown = () => this.createParticleBurst(this.mouseX, this.mouseY, 20);
+
+    // Listeners nativos en lugar de host bindings: a 60+ eventos por segundo,
+    // pasar por el sistema de eventos de Angular dispararía change detection
+    // en cada movimiento del ratón sin que nada de la vista cambie.
+    win.addEventListener('resize', onResize);
+    doc.addEventListener('mousemove', onMouseMove);
+    doc.addEventListener('mousedown', onMouseDown);
+
+    this.rafId = requestAnimationFrame(() => this.animate());
+
+    this.destroyRef.onDestroy(() => {
+      win.removeEventListener('resize', onResize);
+      doc.removeEventListener('mousemove', onMouseMove);
+      doc.removeEventListener('mousedown', onMouseDown);
+      if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.rafId) cancelAnimationFrame(this.rafId);
-    if (this.moveTimeout) clearTimeout(this.moveTimeout);
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    this.canvasWidth = window.innerWidth;
-    this.canvasHeight = window.innerHeight;
-  }
-
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(e: MouseEvent): void {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-
-    // Crear partículas mientras se mueve
-    this.createParticles(e.clientX, e.clientY);
-
-    // Detectar cuando deja de moverse
-    if (this.moveTimeout) clearTimeout(this.moveTimeout);
-    this.moveTimeout = setTimeout(() => {
-      // No action needed
-    }, 100);
-  }
-
-  @HostListener('document:mousedown')
-  onMouseDown(): void {
-    // Explosión de partículas al hacer click
-    this.createParticleBurst(this.mouseX, this.mouseY, 20);
+  private resize(canvas: HTMLCanvasElement, win: Window): void {
+    this.width = win.innerWidth;
+    this.height = win.innerHeight;
+    canvas.width = this.width;
+    canvas.height = this.height;
   }
 
   private createParticles(x: number, y: number): void {
@@ -177,13 +191,11 @@ export class CursorComponent implements OnInit, OnDestroy {
   }
 
   private animate(): void {
-    if (!this.ctx || !this.canvas) {
-      this.rafId = requestAnimationFrame(() => this.animate());
-      return;
-    }
+    const ctx = this.ctx;
+    if (!ctx) return;
 
     // Limpiar canvas completamente (transparente)
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    ctx.clearRect(0, 0, this.width, this.height);
 
     // Actualizar y dibujar partículas
     this.particles = this.particles.filter(p => {
@@ -200,25 +212,25 @@ export class CursorComponent implements OnInit, OnDestroy {
       const twinkleAlpha = p.alpha * (0.6 + Math.sin(p.twinkle) * 0.4);
 
       // Dibujar partícula principal
-      this.ctx!.beginPath();
-      this.ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      this.ctx!.fillStyle = p.color + twinkleAlpha + ')';
-      this.ctx!.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + twinkleAlpha + ')';
+      ctx.fill();
 
       // Glow neón intenso
-      this.ctx!.shadowBlur = p.size * 6;
-      this.ctx!.shadowColor = p.color + (twinkleAlpha * 0.8) + ')';
+      ctx.shadowBlur = p.size * 6;
+      ctx.shadowColor = p.color + (twinkleAlpha * 0.8) + ')';
 
       // Dibujar halo exterior muy sutil
-      this.ctx!.beginPath();
-      this.ctx!.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
-      this.ctx!.fillStyle = p.color + (twinkleAlpha * 0.15) + ')';
-      this.ctx!.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + (twinkleAlpha * 0.15) + ')';
+      ctx.fill();
 
       return true;
     });
 
-    this.ctx.shadowBlur = 0;
+    ctx.shadowBlur = 0;
 
     this.rafId = requestAnimationFrame(() => this.animate());
   }

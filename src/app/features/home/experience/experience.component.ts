@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { TechChipComponent } from '../../../shared/components/tech-chip/tech-chip.component';
@@ -7,8 +6,8 @@ import { EXPERIENCES } from '../../../data/experience.data';
 
 @Component({
   selector: 'app-experience',
-  standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SectionHeadingComponent, GlassCardComponent, TechChipComponent],
   template: `
     <section id="experience" class="experience section-padding">
       <div class="container-custom">
@@ -24,7 +23,9 @@ import { EXPERIENCES } from '../../../data/experience.data';
             <div class="timeline-item" [style.animation-delay.ms]="i * 100">
               <div class="timeline-marker">
                 <div class="marker-dot"></div>
-                <div class="marker-line" *ngIf="i < experiences.length - 1"></div>
+                @if (i < experiences.length - 1) {
+                  <div class="marker-line"></div>
+                }
               </div>
 
               <app-glass-card class="experience-card">
@@ -56,9 +57,11 @@ import { EXPERIENCES } from '../../../data/experience.data';
                   }
                 </div>
 
-                <div class="experience-highlight" *ngIf="exp.highlight">
-                  <span class="highlight-badge">{{ exp.highlight }}</span>
-                </div>
+                @if (exp.highlight) {
+                  <div class="experience-highlight">
+                    <span class="highlight-badge">{{ exp.highlight }}</span>
+                  </div>
+                }
               </app-glass-card>
             </div>
           }

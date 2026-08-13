@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { GlassCardComponent } from '../../../shared/components/glass-card/glass-card.component';
 import { TechChipComponent } from '../../../shared/components/tech-chip/tech-chip.component';
@@ -8,8 +7,8 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-stack',
-  standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SectionHeadingComponent, GlassCardComponent, TechChipComponent, RevealDirective],
   template: `
     <section id="stack" class="stack section-padding">
       <div class="container-custom">
@@ -93,11 +92,11 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `]
 })
 export class StackComponent {
-  techStack = TECH_STACK;
+  protected readonly techStack = TECH_STACK;
 
-  primaryTechs = ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'AWS'];
+  private readonly primaryTechs = ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'AWS'];
 
-  isPrimaryTech(tech: string): boolean {
+  protected isPrimaryTech(tech: string): boolean {
     return this.primaryTechs.includes(tech);
   }
 }

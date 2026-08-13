@@ -1,15 +1,13 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-glass-card',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
       class="glass-card group"
-      [class.hover-effect]="hoverable"
-      [class.glow-effect]="glowOnHover"
+      [class.hover-effect]="hoverable()"
+      [class.glow-effect]="glowOnHover()"
     >
       <ng-content></ng-content>
     </div>
@@ -65,6 +63,6 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class GlassCardComponent {
-  @Input() hoverable = true;
-  @Input() glowOnHover = true;
+  readonly hoverable = input(true);
+  readonly glowOnHover = input(true);
 }

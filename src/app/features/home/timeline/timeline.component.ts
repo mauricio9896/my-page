@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SectionHeadingComponent } from '../../../shared/components/section-heading/section-heading.component';
 import { TIMELINE } from '../../../data/timeline.data';
 import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
 @Component({
   selector: 'app-timeline',
-  standalone: true,
-  imports: [CommonModule, SectionHeadingComponent, RevealDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SectionHeadingComponent, RevealDirective],
   template: `
     <section id="timeline" class="timeline section-padding">
       <div class="container-custom">
@@ -185,5 +184,5 @@ import { RevealDirective } from '../../../shared/directives/reveal.directive';
   `]
 })
 export class TimelineComponent {
-  timeline = TIMELINE;
+  protected readonly timeline = TIMELINE;
 }

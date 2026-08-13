@@ -1,12 +1,13 @@
-import { Component, HostListener, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:scroll)': 'onScroll()'
+  },
   template: `
-    <nav class="navbar" [class.scrolled]="isScrolled()">
+    <nav class="navbar" [class.scrolled]="isScrolled()" aria-label="Navegación principal">
       <div class="navbar-container">
         <a href="#" class="navbar-logo">
           <span class="logo-text">Mauricio</span>
@@ -111,10 +112,9 @@ import { CommonModule } from '@angular/common';
   ],
 })
 export class NavbarComponent {
-  isScrolled = signal(false);
+  protected readonly isScrolled = signal(false);
 
-  @HostListener('window:scroll')
-  onScroll() {
+  protected onScroll(): void {
     this.isScrolled.set(window.scrollY > 50);
   }
 }

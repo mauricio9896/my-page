@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NavbarComponent } from './core/navbar/navbar.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { HeroComponent } from './features/home/hero/hero.component';
@@ -12,7 +12,7 @@ import { InteractiveBackgroundComponent } from './shared/components/interactive-
 
 @Component({
   selector: 'app-root',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NavbarComponent,
     FooterComponent,

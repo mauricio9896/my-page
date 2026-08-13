@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PROFILE } from '../../data/profile.data';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="footer">
       <div class="footer-container">
@@ -109,6 +107,6 @@ import { PROFILE } from '../../data/profile.data';
   `]
 })
 export class FooterComponent {
-  profile = PROFILE;
-  currentYear = new Date().getFullYear();
+  protected readonly profile = PROFILE;
+  protected readonly currentYear = new Date().getFullYear();
 }

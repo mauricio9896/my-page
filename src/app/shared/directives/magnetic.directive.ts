@@ -1,21 +1,33 @@
-import { Directive, ElementRef, Input, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import {
+  Directive,
+  DestroyRef,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+  input
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AnimationService } from '../services/animation.service';
 
 @Directive({
-  selector: '[appMagnetic]',
-  standalone: true
+  selector: '[appMagnetic]'
 })
 export class MagneticDirective implements OnInit {
-  private animationService = inject(AnimationService);
-  private el = inject(ElementRef);
-  private platformId = inject(PLATFORM_ID);
+  private readonly animationService = inject(AnimationService);
+  private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  @Input('appMagnetic') strength: number = 0.3;
+  readonly strength = input(0.3, { alias: 'appMagnetic' });
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.animationService.magneticEffect(this.el.nativeElement, this.strength);
+    const dispose = this.animationService.magneticEffect(
+      this.el.nativeElement,
+      this.strength()
+    );
+    this.destroyRef.onDestroy(dispose);
   }
 }

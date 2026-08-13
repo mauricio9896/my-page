@@ -187,13 +187,18 @@
   color: #A1A1AA;
 }
 
-:host ::ng-deep .keyword { color: #C792EA; }
-:host ::ng-deep .property { color: #82AAFF; }
-:host ::ng-deep .string { color: #C3E88D; }
-:host ::ng-deep .boolean { color: #FF9CAC; }
-:host ::ng-deep .number { color: #F78C6C; }
-:host ::ng-deep .class { color: #FFCB6B; }
-:host ::ng-deep .function { color: #82AAFF; }
+.code-content pre {
+  margin: 0;
+  font: inherit;
+}
+
+.keyword { color: #C792EA; }
+.property { color: #82AAFF; }
+.string { color: #C3E88D; }
+.boolean { color: #FF9CAC; }
+.number { color: #F78C6C; }
+.class { color: #FFCB6B; }
+.function { color: #82AAFF; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }

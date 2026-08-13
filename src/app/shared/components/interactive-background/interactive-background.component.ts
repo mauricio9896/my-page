@@ -1,15 +1,15 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  OnInit,
-  OnDestroy,
-  inject,
-  PLATFORM_ID,
-  signal,
-  HostListener,
+  DestroyRef,
   ElementRef,
-  AfterViewInit
+  PLATFORM_ID,
+  afterNextRender,
+  inject,
+  viewChild,
+  viewChildren
 } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 
 interface FloatingParticle {
   x: number;
@@ -22,43 +22,18 @@ interface FloatingParticle {
   pulseSpeed: number;
 }
 
-interface GlowOrb {
-  x: number;
-  y: number;
-  targetX: number;
-  targetY: number;
-  size: number;
-  color: string;
-  speed: number;
-}
-
 @Component({
   selector: 'app-interactive-background',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="interactive-bg">
+    <div class="interactive-bg" aria-hidden="true">
       <!-- Gradient Orbs que siguen al cursor -->
-      <div
-        class="glow-orb orb-1"
-        [style.transform]="'translate(' + orbPositions()[0].x + 'px, ' + orbPositions()[0].y + 'px)'"
-      ></div>
-      <div
-        class="glow-orb orb-2"
-        [style.transform]="'translate(' + orbPositions()[1].x + 'px, ' + orbPositions()[1].y + 'px)'"
-      ></div>
-      <div
-        class="glow-orb orb-3"
-        [style.transform]="'translate(' + orbPositions()[2].x + 'px, ' + orbPositions()[2].y + 'px)'"
-      ></div>
+      <div #orb class="glow-orb orb-1"></div>
+      <div #orb class="glow-orb orb-2"></div>
+      <div #orb class="glow-orb orb-3"></div>
 
       <!-- Canvas para partículas flotantes -->
-      <canvas
-        #particleCanvas
-        class="particle-canvas"
-        [width]="canvasWidth()"
-        [height]="canvasHeight()"
-      ></canvas>
+      <canvas #canvas class="bg-particle-canvas"></canvas>
 
       <!-- Grid interactivo -->
       <div class="grid-overlay"></div>
@@ -84,7 +59,6 @@ interface GlowOrb {
       border-radius: 50%;
       filter: blur(80px);
       opacity: 0.4;
-      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       will-change: transform;
     }
 
@@ -112,7 +86,7 @@ interface GlowOrb {
       left: -200px;
     }
 
-    .particle-canvas {
+    .bg-particle-canvas {
       position: absolute;
       top: 0;
       left: 0;
@@ -143,28 +117,18 @@ interface GlowOrb {
       opacity: 0.02;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      .glow-orb {
-        transition: none;
-      }
-    }
   `]
 })
-export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
-  private platformId = inject(PLATFORM_ID);
-  private elementRef = inject(ElementRef);
+export class InteractiveBackgroundComponent {
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
 
-  canvasWidth = signal(0);
-  canvasHeight = signal(0);
-  orbPositions = signal([
-    { x: 0, y: 0 },
-    { x: 0, y: 0 },
-    { x: 0, y: 0 }
-  ]);
+  private readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
+  private readonly orbRefs = viewChildren<ElementRef<HTMLDivElement>>('orb');
 
-  private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
+  private width = 0;
+  private height = 0;
   private particles: FloatingParticle[] = [];
   private rafId: number | null = null;
   private mouseX = 0;
@@ -189,69 +153,77 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
     'rgba(79, 70, 229, ',    // Índigo
   ];
 
-  ngOnInit(): void {
+  constructor() {
+    afterNextRender(() => this.setup());
+  }
+
+  private setup(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.canvasWidth.set(window.innerWidth);
-    this.canvasHeight.set(window.innerHeight);
+    const canvas = this.canvasRef()?.nativeElement;
+    if (!canvas) return;
+
+    this.ctx = canvas.getContext('2d');
+    if (!this.ctx) return;
+
+    const win = canvas.ownerDocument.defaultView;
+    if (!win) return;
+
+    this.resize(canvas, win);
 
     // Posición inicial de los orbs
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const centerX = this.width / 2;
+    const centerY = this.height / 2;
 
     this.currentOrbPositions = [
       { x: centerX - 100, y: centerY - 100 },
       { x: centerX + 50, y: centerY + 50 },
       { x: centerX, y: centerY - 50 }
     ];
-    this.targetOrbPositions = [...this.currentOrbPositions];
-    this.orbPositions.set([...this.currentOrbPositions]);
+    this.targetOrbPositions = this.currentOrbPositions.map(p => ({ ...p }));
+    this.paintOrbs();
 
     this.initParticles();
-  }
 
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    this.canvas = this.elementRef.nativeElement.querySelector('.particle-canvas');
-    if (this.canvas) {
-      this.ctx = this.canvas.getContext('2d');
+    // Con movimiento reducido el fondo queda estático: ni loop ni seguimiento del cursor.
+    if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.drawFrame();
+      return;
     }
 
-    this.animate();
+    const onResize = () => {
+      this.resize(canvas, win);
+      this.initParticles();
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+
+      // Actualizar posiciones objetivo de los orbs con diferentes velocidades
+      this.targetOrbPositions[0] = { x: this.mouseX * 0.8, y: this.mouseY * 0.8 };
+      this.targetOrbPositions[1] = { x: this.mouseX * 0.5 + 100, y: this.mouseY * 0.5 + 150 };
+      this.targetOrbPositions[2] = { x: this.mouseX * 0.3 + 200, y: this.mouseY * 0.3 - 100 };
+    };
+
+    // Listeners nativos: el seguimiento del cursor es puramente visual y no debe
+    // provocar change detection en cada evento.
+    win.addEventListener('resize', onResize);
+    canvas.ownerDocument.addEventListener('mousemove', onMouseMove);
+
+    this.rafId = requestAnimationFrame(() => this.animate());
+
+    this.destroyRef.onDestroy(() => {
+      win.removeEventListener('resize', onResize);
+      canvas.ownerDocument.removeEventListener('mousemove', onMouseMove);
+      if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    });
   }
 
-  ngOnDestroy(): void {
-    if (this.rafId) {
-      cancelAnimationFrame(this.rafId);
-    }
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    this.canvasWidth.set(window.innerWidth);
-    this.canvasHeight.set(window.innerHeight);
-    this.initParticles();
-  }
-
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(e: MouseEvent): void {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-
-    // Actualizar posiciones objetivo de los orbs con diferentes velocidades
-    this.targetOrbPositions[0] = {
-      x: this.mouseX * 0.8,
-      y: this.mouseY * 0.8
-    };
-    this.targetOrbPositions[1] = {
-      x: this.mouseX * 0.5 + 100,
-      y: this.mouseY * 0.5 + 150
-    };
-    this.targetOrbPositions[2] = {
-      x: this.mouseX * 0.3 + 200,
-      y: this.mouseY * 0.3 - 100
-    };
+  private resize(canvas: HTMLCanvasElement, win: Window): void {
+    this.width = win.innerWidth;
+    this.height = win.innerHeight;
+    canvas.width = this.width;
+    canvas.height = this.height;
   }
 
   private initParticles(): void {
@@ -264,8 +236,8 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
 
   private createParticle(): FloatingParticle {
     return {
-      x: Math.random() * this.canvasWidth(),
-      y: Math.random() * this.canvasHeight(),
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
       size: Math.random() * 3 + 1,
       speedX: (Math.random() - 0.5) * 0.5,
       speedY: (Math.random() - 0.5) * 0.5,
@@ -275,21 +247,41 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
     };
   }
 
-  private animate = (): void => {
-    if (!this.ctx || !this.canvas) {
-      this.rafId = requestAnimationFrame(this.animate);
-      return;
+  /**
+   * Escribe la posición de los orbs directamente en el DOM. Pasarlas por un
+   * signal enlazado en la plantilla programaría change detection 60 veces por
+   * segundo para un valor que solo afecta a un `transform`.
+   */
+  private paintOrbs(): void {
+    const orbs = this.orbRefs();
+
+    for (let i = 0; i < orbs.length && i < this.currentOrbPositions.length; i++) {
+      const { x, y } = this.currentOrbPositions[i];
+      orbs[i].nativeElement.style.transform = `translate(${x}px, ${y}px)`;
     }
+  }
+
+  private animate(): void {
+    // Animar orbs con easing
+    for (let i = 0; i < this.currentOrbPositions.length; i++) {
+      this.currentOrbPositions[i].x +=
+        (this.targetOrbPositions[i].x - this.currentOrbPositions[i].x) * 0.05;
+      this.currentOrbPositions[i].y +=
+        (this.targetOrbPositions[i].y - this.currentOrbPositions[i].y) * 0.05;
+    }
+    this.paintOrbs();
+
+    this.drawFrame();
+
+    this.rafId = requestAnimationFrame(() => this.animate());
+  }
+
+  private drawFrame(): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
 
     // Limpiar canvas
-    this.ctx.clearRect(0, 0, this.canvasWidth(), this.canvasHeight());
-
-    // Animar orbs con easing
-    for (let i = 0; i < 3; i++) {
-      this.currentOrbPositions[i].x += (this.targetOrbPositions[i].x - this.currentOrbPositions[i].x) * 0.05;
-      this.currentOrbPositions[i].y += (this.targetOrbPositions[i].y - this.currentOrbPositions[i].y) * 0.05;
-    }
-    this.orbPositions.set([...this.currentOrbPositions]);
+    ctx.clearRect(0, 0, this.width, this.height);
 
     // Dibujar y actualizar partículas
     this.particles.forEach((particle, index) => {
@@ -303,17 +295,17 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
       const distance = Math.sqrt(dx * dx + dy * dy);
       const repulsionRadius = 150;
 
-      if (distance < repulsionRadius) {
+      if (distance > 0 && distance < repulsionRadius) {
         const force = (repulsionRadius - distance) / repulsionRadius;
         particle.x += (dx / distance) * force * 2;
         particle.y += (dy / distance) * force * 2;
       }
 
       // Wrap around edges
-      if (particle.x < 0) particle.x = this.canvasWidth();
-      if (particle.x > this.canvasWidth()) particle.x = 0;
-      if (particle.y < 0) particle.y = this.canvasHeight();
-      if (particle.y > this.canvasHeight()) particle.y = 0;
+      if (particle.x < 0) particle.x = this.width;
+      if (particle.x > this.width) particle.x = 0;
+      if (particle.y < 0) particle.y = this.height;
+      if (particle.y > this.height) particle.y = 0;
 
       // Pulsar opacidad
       particle.pulse += particle.pulseSpeed;
@@ -321,26 +313,25 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
 
       // Dibujar partícula
       const color = this.PARTICLE_COLORS[index % this.PARTICLE_COLORS.length];
-      this.ctx!.beginPath();
-      this.ctx!.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-      this.ctx!.fillStyle = `${color}${pulsedOpacity})`;
-      this.ctx!.fill();
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      ctx.fillStyle = `${color}${pulsedOpacity})`;
+      ctx.fill();
 
       // Glow effect
-      this.ctx!.beginPath();
-      this.ctx!.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
-      this.ctx!.fillStyle = `${color}${pulsedOpacity * 0.3})`;
-      this.ctx!.fill();
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+      ctx.fillStyle = `${color}${pulsedOpacity * 0.3})`;
+      ctx.fill();
     });
 
     // Dibujar conexiones entre partículas cercanas
     this.drawConnections();
-
-    this.rafId = requestAnimationFrame(this.animate);
-  };
+  }
 
   private drawConnections(): void {
-    if (!this.ctx) return;
+    const ctx = this.ctx;
+    if (!ctx) return;
 
     const connectionDistance = 120;
 
@@ -352,12 +343,12 @@ export class InteractiveBackgroundComponent implements OnInit, AfterViewInit, On
 
         if (distance < connectionDistance) {
           const opacity = (1 - distance / connectionDistance) * 0.15;
-          this.ctx.beginPath();
-          this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-          this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
-          this.ctx.strokeStyle = `rgba(124, 58, 237, ${opacity})`;
-          this.ctx.lineWidth = 0.5;
-          this.ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(this.particles[i].x, this.particles[i].y);
+          ctx.lineTo(this.particles[j].x, this.particles[j].y);
+          ctx.strokeStyle = `rgba(124, 58, 237, ${opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
         }
       }
     }

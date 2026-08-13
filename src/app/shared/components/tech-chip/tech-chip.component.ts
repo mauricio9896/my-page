@@ -1,13 +1,11 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-tech-chip',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span class="tech-chip" [class.highlighted]="highlighted">
-      {{ technology }}
+    <span class="tech-chip" [class.highlighted]="highlighted()">
+      {{ technology() }}
     </span>
   `,
   styles: [`
@@ -46,6 +44,6 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class TechChipComponent {
-  @Input() technology = '';
-  @Input() highlighted = false;
+  readonly technology = input('');
+  readonly highlighted = input(false);
 }

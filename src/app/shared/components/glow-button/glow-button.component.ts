@@ -1,18 +1,17 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-glow-button',
-  standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button
+      type="button"
       class="glow-button"
-      [class.primary]="variant === 'primary'"
-      [class.secondary]="variant === 'secondary'"
-      [class.outline]="variant === 'outline'"
-      [class.accent]="variant === 'accent'"
-      (click)="onClick.emit($event)"
+      [class.primary]="variant() === 'primary'"
+      [class.secondary]="variant() === 'secondary'"
+      [class.outline]="variant() === 'outline'"
+      [class.accent]="variant() === 'accent'"
+      (click)="clicked.emit($event)"
     >
       <span class="button-content">
         <ng-content></ng-content>
@@ -112,6 +111,6 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class GlowButtonComponent {
-  @Input() variant: 'primary' | 'secondary' | 'outline' | 'accent' = 'primary';
-  @Output() onClick = new EventEmitter<MouseEvent>();
+  readonly variant = input<'primary' | 'secondary' | 'outline' | 'accent'>('primary');
+  readonly clicked = output<MouseEvent>();
 }
